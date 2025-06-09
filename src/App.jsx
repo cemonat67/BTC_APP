@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const coins = ["bitcoin", "ethereum", "avalanche-2", "chainlink", "tether"];
 const coinNames = {
@@ -7,7 +15,7 @@ const coinNames = {
   ethereum: "ETH",
   "avalanche-2": "AVAX",
   chainlink: "LINK",
-  tether: "USDT"
+  tether: "USDT",
 };
 
 function App() {
@@ -21,31 +29,48 @@ function App() {
   }, []);
 
   const fetchPrices = async () => {
-    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coins.join(",")}&vs_currencies=try`);
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${coins.join(",")}&vs_currencies=try`
+    );
     const data = await res.json();
     setPrices(data);
-    setHistory(prev => [
+    setHistory((prev) => [
       ...prev.slice(-9),
       {
         time: new Date().toLocaleTimeString(),
-        ...Object.fromEntries(coins.map(coin => [coinNames[coin], data[coin]?.try || 0]))
-      }
+        ...Object.fromEntries(
+          coins.map((coin) => [coinNames[coin], data[coin]?.try || 0])
+        ),
+      },
     ]);
   };
 
   return (
-    <div className="p-4 font-mono">
-      <h1 className="text-2xl font-bold mb-4">📊 Cem’in Kripto Takip Paneli</h1>
-      <div className="grid grid-cols-2 gap-4 mb-6">
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8 text-center tracking-tight">
+        🪙 Cem Crypto Tracker
+      </h1>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {coins.map((coin) => (
-          <div key={coin} className="bg-white rounded-xl shadow p-4">
-            <h2 className="text-lg font-semibold">{coinNames[coin]}</h2>
-            <p className="text-2xl">₺{prices[coin]?.try.toLocaleString("tr-TR") || "..."}</p>
+          <div
+            key={coin}
+            className="bg-slate-800 p-6 rounded-2xl shadow-md hover:scale-105 transition transform"
+          >
+            <h2 className="text-lg font-semibold mb-2 text-slate-300 tracking-wide">
+              {coinNames[coin]}
+            </h2>
+            <p className="text-2xl font-mono text-sky-400">
+              ₺{prices[coin]?.try.toLocaleString("tr-TR") || "..."}
+            </p>
           </div>
         ))}
       </div>
-      <div className="bg-white p-4 rounded-xl shadow">
-        <h2 className="text-lg font-semibold mb-2">Fiyat Hareketleri (Son 10 veri)</h2>
+
+      <div className="bg-slate-800 p-6 rounded-2xl shadow-md">
+        <h2 className="text-lg font-semibold mb-4 text-slate-300">
+          Fiyat Hareketleri (Son 10 veri)
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={history}>
             <XAxis dataKey="time" />
@@ -53,7 +78,13 @@ function App() {
             <Tooltip />
             <Legend />
             {Object.values(coinNames).map((key) => (
-              <Line key={key} type="monotone" dataKey={key} strokeWidth={2} dot={false} />
+              <Line
+                key={key}
+                type="monotone"
+                dataKey={key}
+                strokeWidth={2}
+                dot={false}
+              />
             ))}
           </LineChart>
         </ResponsiveContainer>
